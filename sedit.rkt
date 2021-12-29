@@ -1,8 +1,23 @@
 #!/usr/bin/racket
 #lang racket
 
+(require racket/cmdline)
 (require 2htdp/image)
 (require 2htdp/universe)
+
+(define filename "/dev/null")
+
+(define app-name (find-system-path 'run-file))
+
+(define (arg-error)
+  (printf "No argument provided for file\n")
+  (printf "Usage: ~a filename\n" app-name)
+  (exit))
+
+(let ([args (current-command-line-arguments)])
+  (if (vector-empty? args)
+      (arg-error)
+      (set! filename (vector-ref args 0))))
 
 (define WIDTH 500)
 (define HEIGHT 40)
@@ -93,9 +108,22 @@
     [(= (string-length a-key) 1) (append-letter ed a-key)]
     [else ed]))
 
+(define (read-file)
+  (make-editor
+   (call-with-input-file filename
+     (λ (in)
+       (read-line in)))
+   ""))
+
+(define (read-file-if-exists)
+  (if (file-exists? filename)
+      (read-file)
+      (make-editor "" "")))
+
 (define (editor-app)
   (big-bang
-   (editor "hello " "world")
+   (read-file-if-exists)
    [to-draw render]
    [on-key edit]))
 
+(editor-app)
