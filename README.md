@@ -10,7 +10,15 @@ Currently, supports
 - basic movements (->, <-)
 - deletion (backspace, delete)
 - text insertion (Unicode characters)
-- Opening
+- Opening and Saving file
 
-TODO
-- Saving file
+Example
+``` sh
+$ echo "test" > test.txt
+$ ./sedit test.txt # opening existing file
+$ # Write "hello" in GUI, press <Enter> (\r)
+$ cat test.txt
+hello
+$
+$ ./sedit non-exist.txt # opening non-existing file
+```

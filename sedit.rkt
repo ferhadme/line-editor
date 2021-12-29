@@ -7,7 +7,8 @@
 
 (define filename "/dev/null")
 
-(define app-name (find-system-path 'run-file))
+(define app-name
+  (find-system-path 'run-file))
 
 (define (arg-error)
   (printf "No argument provided for file\n")
@@ -105,14 +106,25 @@
     [(key=? a-key "right") (go-right ed)]
     [(key=? a-key "\b") (remove-letter ed)]
     [(key=? a-key "\u007F") (remove-letter-del ed)]
+    [(key=? a-key "\r") (save-file ed)]
     [(= (string-length a-key) 1) (append-letter ed a-key)]
     [else ed]))
+
+(define (save-file ed)
+  (let ([pre (editor-pre ed)]
+        [post (editor-post ed)])
+    (with-output-to-file filename
+      (λ ()
+        (printf (string-append pre post)))
+      #:exists 'truncate))
+  (exit))
 
 (define (read-file)
   (make-editor
    (call-with-input-file filename
      (λ (in)
-       (read-line in)))
+       (let ([ln (read-line in)])
+         (if (eof-object? ln) "" ln))))
    ""))
 
 (define (read-file-if-exists)
