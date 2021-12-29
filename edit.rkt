@@ -67,6 +67,16 @@
          (substring pre 0 (- pre-len 1))
          post))))
 
+;; ferha|d --> ferha|
+;; fer|had --> fer|ad
+(define (remove-letter-del ed)
+  (let* ([pre (editor-pre ed)]
+         [post (editor-post ed)]
+         [post-len (string-length post)])
+    (if (= post-len 0) ed
+        (make-editor pre
+                     (substring post 1 post-len)))))
+
 (define (append-letter ed a-key)
   (let ([pre (editor-pre ed)]
         [post (editor-post ed)])
@@ -79,7 +89,9 @@
     [(key=? a-key "left") (go-left ed)]
     [(key=? a-key "right") (go-right ed)]
     [(key=? a-key "\b") (remove-letter ed)]
-    [else (append-letter ed a-key)]))
+    [(key=? a-key "\u007F") (remove-letter-del ed)]
+    [(= (string-length a-key) 1) (append-letter ed a-key)]
+    [else ed]))
 
 (define (editor-app)
   (big-bang
