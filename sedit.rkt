@@ -100,6 +100,9 @@
      (string-append pre a-key)
      post)))
 
+(define (border-checker ed)
+  (<= (image-width (render ed)) WIDTH))
+
 (define (edit ed a-key)
   (cond
     [(key=? a-key "left") (go-left ed)]
@@ -107,6 +110,7 @@
     [(key=? a-key "\b") (remove-letter ed)]
     [(key=? a-key "\u007F") (remove-letter-del ed)]
     [(key=? a-key "\r") (save-file ed)]
+    [(not (border-checker ed)) ed]
     [(= (string-length a-key) 1) (append-letter ed a-key)]
     [else ed]))
 
